@@ -17,8 +17,8 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
+//    @Value("${server.servlet.context-path}")
+//    private String contextPath;
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -36,9 +36,9 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("http://www.apache.org/licenses/LICENSE-2.0.html")))
-                .servers(List.of(
-                        new Server().url(contextPath).description("Local Server")
-                ))
+//                .servers(List.of(
+//                        new Server().url(contextPath).description("Local Server")
+//                ))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName, new SecurityScheme()
