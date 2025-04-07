@@ -7,6 +7,7 @@ import com.example.marketplace.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -37,6 +39,15 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final JwtTokenProvider tokenProvider;
     private final JwtConfig jwtConfig;
+
+    // Chemins d'accès à Swagger UI et OpenAPI
+    private static final String[] SWAGGER_WHITELIST = {
+            "/api/v3/api-docs/**",
+            "/api/swagger-ui/**",
+            "/api/swagger-ui.html",
+            "/api/swagger-resources/**",
+            "/api/webjars/**"
+    };
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -63,7 +74,22 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // Chaîne de filtres spécifique pour Swagger UI
     @Bean
+    @Order(1)
+    public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher(SWAGGER_WHITELIST)
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
+                )
+                .csrf(AbstractHttpConfigurer::disable);
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -74,7 +100,10 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+                        // Swagger est déjà géré par swaggerSecurityFilterChain
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/swagger-ui/**", "/api/swagger-ui.html", "/api/v3/api-docs/**").permitAll()
 
                         // Product related endpoints - read-only operations are public
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
@@ -127,11 +156,36 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Frontend URL
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setExposedHeaders(List.of("x-auth-token"));
-        configuration.setAllowCredentials(true);
+
+        // Autoriser toutes les origines
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        // Ou si vous avez besoin d'allowCredentials=true, utilisez cette approche
+        // (noter que allowCredentials=true n'est pas compatible avec allowedOrigins="*")
+        // configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+
+        // Autoriser toutes les méthodes HTTP
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
+
+        // Autoriser tous les en-têtes
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "X-Auth-Token",
+                "Origin",
+                "Accept",
+                "X-Requested-With",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
+        ));
+
+        // Exposer les en-têtes personnalisés
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "X-Auth-Token"));
+
+        // Mise en cache des résultats du pre-flight pour 1 heure (3600 secondes)
+        configuration.setMaxAge(3600L);
+
+        // Ajoutez cette ligne si vous utilisez des cookies ou une authentification basée sur des sessions
+        // configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

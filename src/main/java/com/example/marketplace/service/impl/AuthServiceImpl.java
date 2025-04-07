@@ -3,7 +3,7 @@ package com.example.marketplace.service.impl;
 import com.example.marketplace.exception.BadRequestException;
 import com.example.marketplace.model.user.User;
 import com.example.marketplace.model.user.UserRole;
-import com.example.marketplace.repository.UserRepository;
+import com.example.marketplace.repository.jpa.UserRepository;
 import com.example.marketplace.dto.auth.JwtAuthResponse;
 import com.example.marketplace.dto.auth.LoginRequest;
 import com.example.marketplace.dto.auth.SignupRequest;

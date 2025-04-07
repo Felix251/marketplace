@@ -1,13 +1,15 @@
-package com.example.marketplace.repository;
+package com.example.marketplace.repository.elasticsearch;
 
 import com.example.marketplace.model.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 
+@Repository
 public interface ProductSearchRepository extends ElasticsearchRepository<Product, Long> {
 
     // Recherche par nom ou description avec score de pertinence
@@ -22,13 +24,13 @@ public interface ProductSearchRepository extends ElasticsearchRepository<Product
 
     // Recherche par catégorie et mot-clé
     @Query("{\"bool\": {\"must\": [" +
-            "{\"match\": {\"categories.name\": \"?0\"}}," +
+            "{\"term\": {\"categories.name.keyword\": \"?0\"}}," +
             "{\"multi_match\": {\"query\": \"?1\", \"fields\": [\"name\", \"description\"]}}" +
             "]}}")
     Page<Product> searchByCategoryAndKeyword(String category, String keyword, Pageable pageable);
 
     // Recherche avec filtres sur plusieurs champs
-    @Query("{\"bool\": {\"must\": [{\"match\": {\"active\": true}}]," +
+    @Query("{\"bool\": {\"must\": [{\"term\": {\"active\": true}}]," +
             "\"should\": [" +
             "{\"match\": {\"name\": {\"query\": \"?0\", \"boost\": 3.0}}}," +
             "{\"match\": {\"description\": {\"query\": \"?0\", \"boost\": 1.0}}}," +

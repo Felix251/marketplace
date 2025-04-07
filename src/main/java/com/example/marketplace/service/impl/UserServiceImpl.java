@@ -3,7 +3,7 @@ package com.example.marketplace.service.impl;
 import com.example.marketplace.exception.ResourceNotFoundException;
 import com.example.marketplace.model.user.User;
 import com.example.marketplace.model.user.UserRole;
-import com.example.marketplace.repository.UserRepository;
+import com.example.marketplace.repository.jpa.UserRepository;
 import com.example.marketplace.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;

@@ -1,6 +1,6 @@
 package com.example.marketplace.security.service;
 
-import com.example.marketplace.repository.UserRepository;
+import com.example.marketplace.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

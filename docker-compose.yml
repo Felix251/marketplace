@@ -84,6 +84,20 @@ services:
       timeout: 10s
       retries: 3
 
+  # Service de supervision pour Elasticsearch (optionnel)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: marketplace-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - marketplace-network
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
 networks:
   marketplace-network:
     driver: bridge
@@ -93,3 +107,4 @@ volumes:
   pgadmin-data:
   redis-data:
   elasticsearch-data:
+  kibana-data:
