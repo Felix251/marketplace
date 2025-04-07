@@ -1,5 +1,8 @@
 package com.example.marketplace.service;
 
+import com.example.marketplace.dto.user.AddressRequest;
+import com.example.marketplace.dto.user.UserProfileUpdateRequest;
+import com.example.marketplace.model.user.Address;
 import com.example.marketplace.model.user.User;
 import com.example.marketplace.model.user.UserRole;
 import org.springframework.data.domain.Page;
@@ -8,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserService {
-
     User getUserById(Long id);
 
     User getUserByEmail(String email);
@@ -36,4 +38,9 @@ public interface UserService {
     List<User> getNewUsers();
 
     long countByRole(UserRole role);
+
+    User updateProfile(UserProfileUpdateRequest updateRequest);
+    Address addAddress(AddressRequest addressRequest);
+    Address updateAddress(Long addressId, AddressRequest addressRequest);
+    void deleteAddress(Long addressId);
 }

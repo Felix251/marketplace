@@ -10,6 +10,7 @@ import com.example.marketplace.dto.auth.SignupRequest;
 import com.example.marketplace.security.jwt.JwtTokenProvider;
 import com.example.marketplace.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -42,8 +44,16 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
 
-        User user = userRepository.findByEmail(loginRequest.getEmail())
+/*         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail()));
+        Pour recuperer les information du user on peut  extraire directement l'utilisateur de l'objet authentication au lieu
+        de refaire une requete findByEmail a la base de donnee
+ */
+
+        User user = (User) authentication.getPrincipal();
+
+        // Journal de connexion (optionnel)
+        log.info("User logged in: {}", user.getEmail());
 
         return new JwtAuthResponse(
                 jwt,
