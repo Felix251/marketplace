@@ -1,4 +1,4 @@
-package com.example.marketplace.repository;
+package com.example.marketplace.repository.jpa;
 
 import com.example.marketplace.model.payment.Payment;
 import com.example.marketplace.model.payment.PaymentMethod;

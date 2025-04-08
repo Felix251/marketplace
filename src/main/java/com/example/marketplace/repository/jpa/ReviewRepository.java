@@ -1,4 +1,4 @@
-package com.example.marketplace.repository;
+package com.example.marketplace.repository.jpa;
 
 import com.example.marketplace.model.product.Review;
 import org.springframework.data.domain.Page;
