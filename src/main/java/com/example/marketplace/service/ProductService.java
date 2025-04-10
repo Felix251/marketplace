@@ -1,5 +1,10 @@
 package com.example.marketplace.service;
 
+import com.example.marketplace.dto.PagedResponse;
+import com.example.marketplace.dto.product.ProductCreateRequest;
+import com.example.marketplace.dto.product.ProductDto;
+import com.example.marketplace.dto.product.ProductSearchCriteria;
+import com.example.marketplace.dto.product.ProductUpdateRequest;
 import com.example.marketplace.model.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,40 +13,41 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductService {
-
     Product getProductById(Long id);
 
-    Page<Product> getAllProducts(Pageable pageable);
+    PagedResponse<ProductDto> getAllProducts(Pageable pageable);
 
-    Page<Product> getProductsByStore(Long storeId, Pageable pageable);
+    PagedResponse<ProductDto> getProductsByStore(Long storeId, Pageable pageable);
 
-    Page<Product> getProductsByCategory(Long categoryId, Pageable pageable);
+    PagedResponse<ProductDto> getProductsByCategory(Long categoryId, Pageable pageable);
 
-    Page<Product> getProductsByCategoryName(String categoryName, Pageable pageable);
+    PagedResponse<ProductDto> getProductsByCategoryName(String categoryName, Pageable pageable);
 
-    Page<Product> searchProducts(String keyword, Pageable pageable);
+    PagedResponse<ProductDto> searchProducts(String keyword, Pageable pageable);
 
-    Page<Product> getProductsByName(String name, Pageable pageable);
+    PagedResponse<ProductDto> getProductsByName(String name, Pageable pageable);
 
-    Page<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+    PagedResponse<ProductDto> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
-    Page<Product> getFeaturedProducts(Pageable pageable);
+    PagedResponse<ProductDto> getFeaturedProducts(Pageable pageable);
 
-    Page<Product> getAvailableProducts(Pageable pageable);
+    PagedResponse<ProductDto> getAvailableProducts(Pageable pageable);
 
-    Product createProduct(Long storeId, Product product, List<Long> categoryIds);
+    ProductDto createProduct(ProductCreateRequest request);
 
-    Product updateProduct(Long id, Product productDetails, List<Long> categoryIds);
+    ProductDto updateProduct(Long id, ProductUpdateRequest request);
 
     void deleteProduct(Long id);
 
     void toggleProductStatus(Long id);
 
-    void updateProductStock(Long id, Integer quantity);
+    void updateProductStock(Long id, Integer quantityDelta);
 
-    List<Product> getTopSellingProducts(int limit);
+    List<ProductDto> getTopSellingProducts(int limit);
 
-    List<Product> getNewProducts();
+    List<ProductDto> getNewProducts();
 
-    boolean isProductAvailable(Long id, Integer quantity);
+    boolean isProductAvailable(Long id, Integer requestedQuantity);
+
+    PagedResponse<ProductDto> findProducts(ProductSearchCriteria criteria);
 }
